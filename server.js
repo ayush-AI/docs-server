@@ -2,15 +2,26 @@
 import { Server } from "socket.io";
 import connectDB from "./database/db.js";
 import { config } from "dotenv";
+import express from "express";
 import { updateDocument, getDocuments } from "./controller/document-controller.js";
 
-const io = new Server(9000, {
+config();
+const PORT = process.env.PORT || 5000;
+
+const app = express();
+
+// Create an HTTP server using Express
+const server = app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+
+const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: process.env.CLIENT_URL || "http://localhost:5173",
         methods: ["GET", "POST"],
     },
 });
-config();
 connectDB();
 
 io.on("connection", (socket) => {
